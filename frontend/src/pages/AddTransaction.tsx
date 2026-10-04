@@ -428,7 +428,7 @@ export default function AddTransaction() {
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              ⚓ Vessel Delivery (Sea)
+              Vessel Delivery (Sea)
             </button>
             <button
               type="button"
@@ -439,7 +439,7 @@ export default function AddTransaction() {
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              🚚 Overland Delivery (Land)
+              Overland Delivery (Land)
             </button>
           </div>
 
@@ -454,7 +454,7 @@ export default function AddTransaction() {
         {vesselHistory.length > 0 && (
           <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-md">
             <div className="text-xs font-medium text-gray-500 mb-2">
-              ⚡ Click to auto-fill learned details for <strong>{clientName}</strong>:
+              Click to auto-fill learned details for <strong>{clientName}</strong>:
             </div>
             <div className="flex flex-wrap gap-2">
               {vesselHistory.map((v, i) => {
@@ -470,7 +470,6 @@ export default function AddTransaction() {
                         : 'border-blue-300 hover:border-blue-500 hover:bg-blue-50 text-blue-900'
                     }`}
                   >
-                    <span>{isTruck ? '🚚' : '⚓'}</span>
                     <span className="font-bold">{v.vessel_name}</span>
                     <span className="text-gray-500 text-[10px]">
                       ({isTruck ? 'No Berthing' : `GRT: ${v.grt}`}, {v.species || 'TAMBAN'})
