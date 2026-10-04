@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Search, X, Printer, FileText, Edit2, Save, Plus, Trash2, CheckCircle, Lock, ArrowRightLeft } from 'lucide-react';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = 'https://checkers-uis5.onrender.com/api';
 
 function formatDate(d: string) {
   if (!d) return '';

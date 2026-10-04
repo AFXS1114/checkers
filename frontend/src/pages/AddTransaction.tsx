@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Plus, Trash2, Printer } from 'lucide-react';
 import { format } from 'date-fns';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = 'https://checkers-uis5.onrender.com/api';
 
 export default function AddTransaction() {
   const [clientName, setClientName] = useState('');

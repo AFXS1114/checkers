@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Save, Printer, Monitor, Upload, CheckCircle, AlertCircle } from 'lucide-react';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = 'https://checkers-uis5.onrender.com/api';
 
 export default function Settings() {
   const [settings, setSettings] = useState({

@@ -1,6 +1,6 @@
 import { Upload, Download } from 'lucide-react';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = 'https://checkers-uis5.onrender.com/api';
 
 export default function BackupRestore() {
   const handleBackup = () => {

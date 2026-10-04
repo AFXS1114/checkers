@@ -123,7 +123,7 @@ export async function getDB(): Promise<Database> {
     try {
       const res = dbInstance.exec("PRAGMA table_info(transactions)");
       if (res.length > 0) {
-        const cols = res[0].values.map(v => v[1]);
+        const cols = res[0].values.map((v: any[]) => v[1]);
         if (!cols.includes('status')) {
           dbInstance.exec("ALTER TABLE transactions ADD COLUMN status TEXT DEFAULT 'UNPAID';");
         }
@@ -134,7 +134,7 @@ export async function getDB(): Promise<Database> {
     try {
       const res = dbInstance.exec("PRAGMA table_info(transaction_records)");
       if (res.length > 0) {
-        const cols = res[0].values.map(v => v[1]);
+        const cols = res[0].values.map((v: any[]) => v[1]);
         if (!cols.includes('grt')) {
           dbInstance.exec("ALTER TABLE transaction_records ADD COLUMN grt REAL DEFAULT 3;");
         }
