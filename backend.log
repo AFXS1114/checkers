@@ -1,0 +1,1113 @@
+[BACKEND STARTED]  
+
+> backend@1.0.0 dev
+> nodemon --exec tsx src/index.ts
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: ts,json[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+PRAGMA journal_mode = WAL
+PRAGMA foreign_keys = ON
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT
+);
+CREATE TABLE IF NOT EXISTS transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_number TEXT UNIQUE,
+    transaction_date TEXT,
+    client_name TEXT,
+    price_per_tub REAL,
+    berthing_fee_per_vessel REAL,
+    vat_enabled INTEGER,
+    vat_rate REAL,
+    total_tubs INTEGER,
+    unloading_amount REAL,
+    berthing_amount REAL,
+    total_vat REAL,
+    grand_total REAL,
+    status TEXT DEFAULT 'UNPAID',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS transaction_records (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_id INTEGER,
+    arrival_date TEXT,
+    vessel_name TEXT,
+    species TEXT,
+    grt REAL DEFAULT 3,
+    tubs INTEGER,
+    line_unloading_amount REAL,
+    line_berthing_fee REAL,
+    FOREIGN KEY (transaction_id) REFERENCES transactions (id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS clients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL COLLATE NOCASE,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+-- Seed client list
+INSERT OR IGNORE INTO clients (name) VALUES ('ABI FISH DEALER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ADONIS FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('AHL MARINE PRODUCTS TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('ALFRED FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ALDIN A. BARTOLATA');
+INSERT OR IGNORE INTO clients (name) VALUES ('AHL FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ALJUN FISH TRADER');
+INSERT OR IGNORE INTO clients (name) VALUES ('J-A FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('VAL FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('ALVIN FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('ANDREW FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ANNABELLE M. GRUTAS');
+INSERT OR IGNORE INTO clients (name) VALUES ('AGS FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ARNIE FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ARNULFO FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ERAP VILAVIANO');
+INSERT OR IGNORE INTO clients (name) VALUES ('SMALL BROOKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('RMM/BRYAN');
+INSERT OR IGNORE INTO clients (name) VALUES ('AKONG FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('CHI-AM FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('JAI FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('CHRISTIAN H. FRILLES');
+INSERT OR IGNORE INTO clients (name) VALUES ('C.T FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANDES RODRIGUEZ COMPANY');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANILO B. MATAVERDE');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANILO DILAO GIMAO FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANILO R. BARRUN');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANILO GICARO');
+INSERT OR IGNORE INTO clients (name) VALUES ('DARLO BRUCELO FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('DOMINADOR GICARO FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('JAD FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('BUNSO FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('EDDIE R. HAYAHAY');
+INSERT OR IGNORE INTO clients (name) VALUES ('EDISON P. METEORO II FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('EDMAR JASARENO FISH DEALER');
+INSERT OR IGNORE INTO clients (name) VALUES ('PATRICK FISH DEALER');
+INSERT OR IGNORE INTO clients (name) VALUES ('VEGA FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('AMANTE');
+INSERT OR IGNORE INTO clients (name) VALUES ('BOBBETH FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('PRINCE ERIC FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ERLINDA M. LISTA');
+INSERT OR IGNORE INTO clients (name) VALUES ('MARK FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ERNESTO FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('FE FISH TRADER');
+INSERT OR IGNORE INTO clients (name) VALUES ('DABALABS FISH SELLER');
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    action TEXT,
+    details TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+-- Insert default settings if they don't exist
+INSERT OR IGNORE INTO settings (key, value) VALUES ('price_per_tub', '25.00');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('berthing_fee', '20.00');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('vat_enabled', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('vat_rate', '0.12');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('company_name', 'Fish Unloading Co.');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('company_address', '123 Harbor Street');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('contact_number', '555-0100');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_date', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_vessel', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_specie', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_tubs', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_amount', '1');
+Database schema initialized.
+PRAGMA table_info(transaction_records)
+PRAGMA table_info(transactions)
+Backend server running on http://localhost:3001
+SELECT key, value FROM settings
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions WHERE id = '793'
+SELECT * FROM transaction_records WHERE transaction_id = '793'
+SELECT * FROM transactions WHERE id = '793'
+BEGIN
+
+            UPDATE transactions SET
+                client_name = 'NONO ABE GERSALIA',
+                transaction_date = '2026-10-03',
+                total_tubs = 236.0,
+                unloading_amount = 1180.0,
+                berthing_amount = 280.0,
+                total_vat = 175.2,
+                grand_total = 1635.2,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = '793'
+        
+DELETE FROM transaction_records WHERE transaction_id = '793'
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'KING JOMAR', 'TAMBAN', 3.0, 22.0,
+                110.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'G2-ZERN', 'TAMBAN', 3.0, 14.0,
+                70.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'JANNA SARIEL', 'TAMBAN', 3.0, 15.0,
+                75.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'KYLA', 'TAMBAN', 3.0, 15.0,
+                75.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'AMAZING GRACE', 'TAMBAN', 3.0, 14.0,
+                70.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'TERESA', 'TAMBAN', 3.0, 12.0,
+                60.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'ST.JOSEPH', 'TAMBAN', 3.0, 22.0,
+                110.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'PETMALU', 'TAMBAN', 3.0, 19.0,
+                95.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'LADY THEA', 'TAMBAN', 3.0, 26.0,
+                130.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'SHYRLAN', 'TAMBAN', 3.0, 23.0,
+                115.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'ST.JOSEPH', 'TAMBAN', 3.0, 29.0,
+                145.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'FPJ', 'TAMBAN', 3.0, 8.0,
+                40.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'SHYRLAN', 'TAMBAN', 3.0, 8.0,
+                40.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '793', '2026-10-03', 'BEA LEA', 'TAMBAN', 3.0, 9.0,
+                45.0, 20.0
+            )
+        
+COMMIT
+SELECT * FROM transactions WHERE id = '793'
+SELECT * FROM transaction_records WHERE transaction_id = '793'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions WHERE id = '792'
+SELECT * FROM transaction_records WHERE transaction_id = '792'
+SELECT * FROM transactions WHERE id = '792'
+BEGIN
+
+            UPDATE transactions SET
+                client_name = 'ABI FISH DEALER',
+                transaction_date = '2026-10-03',
+                total_tubs = 197.0,
+                unloading_amount = 985.0,
+                berthing_amount = 200.0,
+                total_vat = 142.2,
+                grand_total = 1327.2,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = '792'
+        
+DELETE FROM transaction_records WHERE transaction_id = '792'
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'NICKSON', 'TAMBAN', 3.0, 29.0,
+                145.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'JEAN MAR', 'TAMBAN', 3.0, 28.0,
+                140.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'ANGELO', 'TAMBAN', 3.0, 23.0,
+                115.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'EMMANUEL', 'BORAO', 3.0, 3.0,
+                15.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'ZF', 'TAMBAN', 3.0, 22.0,
+                110.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'DONOR', 'TAMBAN', 3.0, 32.0,
+                160.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'MIEZEL 1', 'TAMBAN', 3.0, 20.0,
+                100.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'MIEZEL 2', 'TAMBAN', 3.0, 20.0,
+                100.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'AIKA', 'TAMBAN', 3.0, 8.0,
+                40.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '792', '2026-10-03', 'TIN TIN', 'TAMBAN', 3.0, 12.0,
+                60.0, 20.0
+            )
+        
+COMMIT
+SELECT * FROM transactions WHERE id = '792'
+SELECT * FROM transaction_records WHERE transaction_id = '792'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '792'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '792'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '793'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '793'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '780'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '780'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '717'
+SELECT * FROM transaction_records WHERE transaction_id = '717'
+SELECT * FROM transactions WHERE id = '595'
+SELECT * FROM transaction_records WHERE transaction_id = '595'
+SELECT * FROM transactions WHERE id = '717'
+SELECT * FROM transaction_records WHERE transaction_id = '717'
+SELECT * FROM transactions WHERE id = '595'
+SELECT * FROM transaction_records WHERE transaction_id = '595'
+SELECT * FROM transactions WHERE id = '595'
+BEGIN
+
+            UPDATE transactions SET
+                client_name = 'LIMUEL D. LETADA',
+                transaction_date = '2026-09-25',
+                total_tubs = 34.0,
+                unloading_amount = 170.0,
+                berthing_amount = 60.0,
+                total_vat = 27.6,
+                grand_total = 257.6,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = '595'
+        
+DELETE FROM transaction_records WHERE transaction_id = '595'
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '595', '2026-08-21', 'JELA JOY', 'TAMBAN', 3.0, 7.0,
+                35.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '595', '2026-09-23', 'JELAH JOY', 'TAMBAN', 3.0, 11.0,
+                55.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '595', '2026-09-25', 'JELAH JOY', 'TAMBAN', 3.0, 16.0,
+                80.0, 20.0
+            )
+        
+COMMIT
+SELECT * FROM transactions WHERE id = '595'
+SELECT * FROM transaction_records WHERE transaction_id = '595'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '717'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '717'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '595'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '595'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions WHERE id = '824'
+SELECT * FROM transaction_records WHERE transaction_id = '824'
+SELECT * FROM transactions WHERE id = '824'
+SELECT * FROM transaction_records WHERE transaction_id = '824'
+SELECT key, value FROM settings
+SELECT key, value FROM settings
+SELECT id, name FROM clients WHERE name LIKE '%B%' ORDER BY name ASC LIMIT 20
+SELECT id, name FROM clients WHERE name LIKE '%BO%' ORDER BY name ASC LIMIT 20
+SELECT id, name FROM clients WHERE name LIKE '%BOY%' ORDER BY name ASC LIMIT 20
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT key, value FROM settings
+SELECT key, value FROM settings
+SELECT id, name FROM clients WHERE name LIKE '%T%' ORDER BY name ASC LIMIT 20
+SELECT id, name FROM clients WHERE name LIKE '%TO%' ORDER BY name ASC LIMIT 20
+SELECT id, name FROM clients WHERE name LIKE '%TOB%' ORDER BY name ASC LIMIT 20
+SELECT id, name FROM clients WHERE name LIKE '%TOBI%' ORDER BY name ASC LIMIT 20
+SELECT id, name FROM clients WHERE name LIKE '%TOBIA%' ORDER BY name ASC LIMIT 20
+SELECT id, name FROM clients WHERE name LIKE '%TOBIAS%' ORDER BY name ASC LIMIT 20
+
+            SELECT tr.vessel_name, tr.grt, tr.species,
+                   MAX(t.transaction_date) AS last_used
+            FROM transaction_records tr
+            JOIN transactions t ON t.id = tr.transaction_id
+            WHERE UPPER(t.client_name) = UPPER('TOBIAS M. GRATIL')
+            GROUP BY UPPER(tr.vessel_name)
+            ORDER BY last_used DESC
+            LIMIT 30
+        
+SELECT key, value FROM settings
+SELECT transaction_number FROM transactions ORDER BY id DESC LIMIT 1
+BEGIN
+
+            INSERT INTO transactions (
+                transaction_number, transaction_date, client_name, 
+                price_per_tub, berthing_fee_per_vessel, 
+                vat_enabled, vat_rate, 
+                total_tubs, unloading_amount, berthing_amount, 
+                total_vat, grand_total
+            ) VALUES (
+                '000829', '2026-10-04', 'TOBIAS M. GRATIL',
+                5.0, 20.0,
+                1.0, 0.12,
+                32.0, 160.0, 60.0,
+                26.4, 246.4
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                831.0, '2026-10-04', 'HAZEL', 'TAMBAN', 3.0, 11.0,
+                55.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                831.0, '2026-10-04', 'HAZEL', 'TAMBAN', 3.0, 15.0,
+                75.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                831.0, '2026-10-04', 'MUTYA', 'TAMBAN', 3.0, 6.0,
+                30.0, 20.0
+            )
+        
+COMMIT
+SELECT * FROM transactions WHERE id = '831'
+SELECT * FROM transaction_records WHERE transaction_id = '831'
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions WHERE id = '771'
+SELECT * FROM transaction_records WHERE transaction_id = '771'
+SELECT * FROM transactions WHERE id = '771'
+BEGIN
+
+            UPDATE transactions SET
+                client_name = 'NERMA FISH TRADING',
+                transaction_date = '2026-10-03',
+                total_tubs = 81.0,
+                unloading_amount = 405.0,
+                berthing_amount = 180.0,
+                total_vat = 70.2,
+                grand_total = 655.2,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = '771'
+        
+DELETE FROM transaction_records WHERE transaction_id = '771'
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'JOCEL CRIS', 'TAMBAN', 3.0, 10.0,
+                50.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'JAYSABEL', 'TAMBAN', 3.0, 11.0,
+                55.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'DANER 1', 'TAMBAN', 3.0, 17.0,
+                85.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'SYDNEY', 'TAMBAN', 3.0, 9.0,
+                45.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'PADARA SA BABY JM', 'TAMBAN', 3.0, 5.0,
+                25.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'FATCHOI', 'TAMBAN', 3.0, 3.0,
+                15.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', '3 ANGELS', 'TAMBAN', 3.0, 7.0,
+                35.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'MARCNEIL', 'TAMBAN', 3.0, 3.0,
+                15.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'CHESKA', 'TAMBAN', 3.0, 16.0,
+                80.0, 20.0
+            )
+        
+COMMIT
+SELECT * FROM transactions WHERE id = '771'
+SELECT * FROM transaction_records WHERE transaction_id = '771'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '771'
+SELECT * FROM transaction_records WHERE transaction_id = '771'
+SELECT * FROM transactions WHERE id = '771'
+SELECT * FROM transaction_records WHERE transaction_id = '771'
+SELECT * FROM transactions WHERE id = '771'
+BEGIN
+
+            UPDATE transactions SET
+                client_name = 'NERMA FISH TRADING',
+                transaction_date = '2026-10-03',
+                total_tubs = 66.0,
+                unloading_amount = 330.0,
+                berthing_amount = 120.0,
+                total_vat = 54.0,
+                grand_total = 504.0,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = '771'
+        
+DELETE FROM transaction_records WHERE transaction_id = '771'
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'JOCEL CRIS', 'TAMBAN', 3.0, 10.0,
+                50.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'JAYSABEL', 'TAMBAN', 3.0, 11.0,
+                55.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'DANER 1', 'TAMBAN', 3.0, 17.0,
+                85.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'SYDNEY', 'TAMBAN', 3.0, 9.0,
+                45.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'MARCNEIL', 'TAMBAN', 3.0, 3.0,
+                15.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '771', '2026-10-02', 'CHESKA', 'TAMBAN', 3.0, 16.0,
+                80.0, 20.0
+            )
+        
+COMMIT
+SELECT * FROM transactions WHERE id = '771'
+SELECT * FROM transaction_records WHERE transaction_id = '771'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '771'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '771'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '746'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '746'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '711'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '711'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '690'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '690'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '651'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '651'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '613'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '613'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '603'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '603'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '564'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '564'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '519'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '519'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions WHERE id = '830'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '830'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '831'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '831'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '828'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '828'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '824'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '824'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '829'
+SELECT * FROM transaction_records WHERE transaction_id = '829'
+SELECT * FROM transactions WHERE id = '829'
+BEGIN
+
+            UPDATE transactions SET
+                client_name = 'JOEL  F. BOMBIO',
+                transaction_date = '2026-10-04',
+                total_tubs = 201.0,
+                unloading_amount = 1005.0,
+                berthing_amount = 420.0,
+                total_vat = 171.0,
+                grand_total = 1596.0,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = '829'
+        
+DELETE FROM transaction_records WHERE transaction_id = '829'
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'KING JOE 1', 'TAMBAN', 3.0, 10.0,
+                50.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'KING RONNIE', 'TAMBAN', 3.0, 3.0,
+                15.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'KJ 2', 'TAMBAN', 3.0, 14.0,
+                70.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'SUMMER', 'TAMBAN', 3.0, 3.0,
+                15.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'KING JOE 2', 'TAMBAN', 3.0, 6.0,
+                30.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'KING JOE', 'TAMBAN', 3.0, 14.0,
+                70.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'KIER ', 'TAMBAN', 3.0, 5.0,
+                25.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'JAKE ALEX', 'TAMBAN', 3.0, 31.0,
+                155.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'JAKE ALEX 2', 'TAMBAN', 3.0, 17.0,
+                85.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'KENTH 3', 'TAMBAN', 3.0, 14.0,
+                70.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'KENTH', 'TAMBAN', 3.0, 21.0,
+                105.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'JAP', 'TAMBAN', 3.0, 5.0,
+                25.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'PJ', 'TAMBAN', 3.0, 8.0,
+                40.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'MICA NICOLE', 'TAMBAN', 3.0, 5.0,
+                25.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'ROSH', 'TAMBAN', 3.0, 5.0,
+                25.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'SMJ', 'TAMBAN', 3.0, 5.0,
+                25.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'A NOAH', 'TAMBAN', 3.0, 3.0,
+                15.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'MILES', 'TAMBAN', 3.0, 3.0,
+                15.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'AXECOOL', 'TAMBAN', 3.0, 14.0,
+                70.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'JAMES CARL', 'TAMBAN', 3.0, 4.0,
+                20.0, 20.0
+            )
+        
+
+            INSERT INTO transaction_records (
+                transaction_id, arrival_date, vessel_name, species, grt, tubs,
+                line_unloading_amount, line_berthing_fee
+            ) VALUES (
+                '829', '2026-10-04', 'AXECOOL 2', 'TAMBAN', 3.0, 11.0,
+                55.0, 20.0
+            )
+        
+COMMIT
+SELECT * FROM transactions WHERE id = '829'
+SELECT * FROM transaction_records WHERE transaction_id = '829'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '829'
+UPDATE transactions SET status = 'PAID', updated_at = CURRENT_TIMESTAMP WHERE id = '829'
+SELECT * FROM transactions ORDER BY id DESC
+SELECT * FROM transactions WHERE id = '805'
+SELECT * FROM transaction_records WHERE transaction_id = '805'
+SELECT * FROM transactions WHERE id = '804'
+SELECT * FROM transaction_records WHERE transaction_id = '804'
+^C[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting child process[39m
+[32m[nodemon] starting `tsx src/index.ts`[39m
+PRAGMA journal_mode = WAL
+PRAGMA foreign_keys = ON
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT
+);
+CREATE TABLE IF NOT EXISTS transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_number TEXT UNIQUE,
+    transaction_date TEXT,
+    client_name TEXT,
+    price_per_tub REAL,
+    berthing_fee_per_vessel REAL,
+    vat_enabled INTEGER,
+    vat_rate REAL,
+    total_tubs INTEGER,
+    unloading_amount REAL,
+    berthing_amount REAL,
+    total_vat REAL,
+    grand_total REAL,
+    status TEXT DEFAULT 'UNPAID',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS transaction_records (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_id INTEGER,
+    arrival_date TEXT,
+    vessel_name TEXT,
+    species TEXT,
+    grt REAL DEFAULT 3,
+    tubs INTEGER,
+    line_unloading_amount REAL,
+    line_berthing_fee REAL,
+    FOREIGN KEY (transaction_id) REFERENCES transactions (id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS clients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL COLLATE NOCASE,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+-- Seed client list
+INSERT OR IGNORE INTO clients (name) VALUES ('ABI FISH DEALER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ADONIS FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('AHL MARINE PRODUCTS TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('ALFRED FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ALDIN A. BARTOLATA');
+INSERT OR IGNORE INTO clients (name) VALUES ('AHL FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ALJUN FISH TRADER');
+INSERT OR IGNORE INTO clients (name) VALUES ('J-A FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('VAL FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('ALVIN FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('ANDREW FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ANNABELLE M. GRUTAS');
+INSERT OR IGNORE INTO clients (name) VALUES ('AGS FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ARNIE FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ARNULFO FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ERAP VILAVIANO');
+INSERT OR IGNORE INTO clients (name) VALUES ('SMALL BROOKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('RMM/BRYAN');
+INSERT OR IGNORE INTO clients (name) VALUES ('AKONG FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('CHI-AM FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('JAI FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('CHRISTIAN H. FRILLES');
+INSERT OR IGNORE INTO clients (name) VALUES ('C.T FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANDES RODRIGUEZ COMPANY');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANILO B. MATAVERDE');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANILO DILAO GIMAO FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANILO R. BARRUN');
+INSERT OR IGNORE INTO clients (name) VALUES ('DANILO GICARO');
+INSERT OR IGNORE INTO clients (name) VALUES ('DARLO BRUCELO FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('DOMINADOR GICARO FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('JAD FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('BUNSO FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('EDDIE R. HAYAHAY');
+INSERT OR IGNORE INTO clients (name) VALUES ('EDISON P. METEORO II FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('EDMAR JASARENO FISH DEALER');
+INSERT OR IGNORE INTO clients (name) VALUES ('PATRICK FISH DEALER');
+INSERT OR IGNORE INTO clients (name) VALUES ('VEGA FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('AMANTE');
+INSERT OR IGNORE INTO clients (name) VALUES ('BOBBETH FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('PRINCE ERIC FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ERLINDA M. LISTA');
+INSERT OR IGNORE INTO clients (name) VALUES ('MARK FISH BROKER');
+INSERT OR IGNORE INTO clients (name) VALUES ('ERNESTO FISH TRADING');
+INSERT OR IGNORE INTO clients (name) VALUES ('FE FISH TRADER');
+INSERT OR IGNORE INTO clients (name) VALUES ('DABALABS FISH SELLER');
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    action TEXT,
+    details TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+-- Insert default settings if they don't exist
+INSERT OR IGNORE INTO settings (key, value) VALUES ('price_per_tub', '25.00');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('berthing_fee', '20.00');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('vat_enabled', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('vat_rate', '0.12');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('company_name', 'Fish Unloading Co.');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('company_address', '123 Harbor Street');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('contact_number', '555-0100');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_date', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_vessel', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_specie', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_tubs', '1');
+INSERT OR IGNORE INTO settings (key, value) VALUES ('print_col_amount', '1');
+Database schema initialized.
+PRAGMA table_info(transaction_records)
+PRAGMA table_info(transactions)
+^C^CBackend server running on http://localhost:3001
+SELECT key, value FROM settings
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions ORDER BY id DESC
+SELECT key, value FROM settings
+SELECT * FROM transactions WHERE id = '804'
+SELECT * FROM transaction_records WHERE transaction_id = '804'
