@@ -44,6 +44,12 @@ export default function Transactions() {
   const [selectedTargetTx, setSelectedTargetTx] = useState<any>(null);
   const [transferring, setTransferring] = useState(false);
 
+  // TBF Number state
+  const [tbfInput, setTbfInput] = useState('');
+  const [updateTbfTx, setUpdateTbfTx] = useState<any>(null);
+  const [updateTbfInput, setUpdateTbfInput] = useState('');
+  const [updatingTbf, setUpdatingTbf] = useState(false);
+
   useEffect(() => {
     fetchTransactions();
     fetchSettings();
@@ -69,21 +75,53 @@ export default function Transactions() {
 
   const handleConfirmPaid = async () => {
     if (!confirmTx) return;
+    if (!tbfInput.trim()) {
+      alert('Please enter a TBF Number before marking as paid.');
+      return;
+    }
     const txId = confirmTx.id;
     setMarkingPaid(true);
     try {
-      await axios.patch(`${API_BASE}/transactions/${txId}/status`, { status: 'PAID' });
+      await axios.patch(`${API_BASE}/transactions/${txId}/status`, { status: 'PAID', tbf_number: tbfInput.trim() });
       fetchTransactions();
       if (selectedTx && selectedTx.id === txId) {
-        setSelectedTx({ ...selectedTx, status: 'PAID' });
+        const res = await axios.get(`${API_BASE}/transactions/${txId}`);
+        setSelectedTx(res.data);
+        initEditState(res.data);
         setIsEditing(false);
       }
       setConfirmTx(null);
-    } catch (err) {
+      setTbfInput('');
+    } catch (err: any) {
       console.error('Failed to mark transaction as paid', err);
-      alert('Failed to mark transaction as paid.');
+      alert(err?.response?.data?.error || 'Failed to mark transaction as paid.');
     } finally {
       setMarkingPaid(false);
+    }
+  };
+
+  const handleUpdateTbf = async () => {
+    if (!updateTbfTx) return;
+    if (!updateTbfInput.trim()) {
+      alert('Please enter a TBF Number.');
+      return;
+    }
+    setUpdatingTbf(true);
+    try {
+      await axios.patch(`${API_BASE}/transactions/${updateTbfTx.id}/tbf`, { tbf_number: updateTbfInput.trim() });
+      fetchTransactions();
+      if (selectedTx && selectedTx.id === updateTbfTx.id) {
+        const res = await axios.get(`${API_BASE}/transactions/${updateTbfTx.id}`);
+        setSelectedTx(res.data);
+        initEditState(res.data);
+      }
+      setUpdateTbfTx(null);
+      setUpdateTbfInput('');
+    } catch (err: any) {
+      console.error('Failed to update TBF number', err);
+      alert(err?.response?.data?.error || 'Failed to update TBF number.');
+    } finally {
+      setUpdatingTbf(false);
     }
   };
 
@@ -520,6 +558,11 @@ export default function Transactions() {
                           {isPaid ? <CheckCircle className="w-3 h-3" /> : null}
                           {isPaid ? 'PAID' : 'UNPAID'}
                         </span>
+                        {isPaid && selectedTx.tbf_number && (
+                          <span className="text-xs bg-violet-100 text-violet-800 font-bold px-2 py-0.5 rounded border border-violet-300 font-mono">
+                            TBF: {selectedTx.tbf_number}
+                          </span>
+                        )}
                         {isEditing && (
                           <span className="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded border border-amber-300">
                             Editing Mode
@@ -570,10 +613,22 @@ export default function Transactions() {
                             </button>
                           </>
                         ) : (
-                          <span className="flex items-center gap-1.5 bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200">
-                            <Lock className="w-3.5 h-3.5" />
-                            Record Locked (Paid)
-                          </span>
+                          <>
+                            <button
+                              onClick={() => {
+                                setUpdateTbfTx(selectedTx);
+                                setUpdateTbfInput(selectedTx.tbf_number || '');
+                              }}
+                              className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                              Update TBF
+                            </button>
+                            <span className="flex items-center gap-1.5 bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200">
+                              <Lock className="w-3.5 h-3.5" />
+                              Locked
+                            </span>
+                          </>
                         )}
                         <button
                           onClick={() => handleReprint(selectedTx)}
@@ -664,6 +719,7 @@ export default function Transactions() {
                         <thead className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase">
                           <tr>
                             <th className="px-4 py-3">Arrival Date</th>
+                            <th className="px-4 py-3">TBF No.</th>
                             <th className="px-4 py-3">Vessel / Cargo Name</th>
                             <th className="px-4 py-3">Species</th>
                             <th className="px-4 py-3 text-center">GRT</th>
@@ -679,6 +735,7 @@ export default function Transactions() {
                             (selectedTx.records || []).map((r: any, i: number) => (
                               <tr key={i} className="hover:bg-gray-50">
                                 <td className="px-4 py-3">{formatDate(r.arrival_date)}</td>
+                                <td className="px-4 py-3 text-gray-500 font-mono text-xs">{r.tbf_number || '—'}</td>
                                 <td className="px-4 py-3 font-medium text-gray-900">
                                   {r.vessel_name}
                                   {(r.grt === 0 || r.vessel_name?.startsWith('TRUCK')) && (
@@ -726,6 +783,7 @@ export default function Transactions() {
                                     className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                                   />
                                 </td>
+                                <td className="px-3 py-2 text-center text-gray-400 text-xs">—</td>
                                 <td className="px-3 py-2">
                                   <input
                                     type="text"
@@ -826,6 +884,19 @@ export default function Transactions() {
                 Note: Once marked as paid, this transaction will be locked from further edits.
               </span>
             </p>
+
+            <div className="mb-6">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                TBF Number (Required)
+              </label>
+              <input
+                type="text"
+                value={tbfInput}
+                onChange={(e) => setTbfInput(e.target.value)}
+                placeholder="Enter TBF Number"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 font-mono"
+              />
+            </div>
 
             <div className="flex items-center justify-end gap-3">
               <button
@@ -1007,6 +1078,48 @@ export default function Transactions() {
               >
                 <ArrowRightLeft className="w-4 h-4" />
                 {transferring ? 'Transferring…' : 'Transfer Vessel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update TBF Modal */}
+      {updateTbfTx && (
+        <div className="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 border border-gray-100 animate-in fade-in zoom-in duration-150">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Update TBF Number</h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Transaction #{updateTbfTx.transaction_number} · {updateTbfTx.client_name}
+            </p>
+            
+            <div className="mb-6">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
+                TBF Number
+              </label>
+              <input
+                type="text"
+                value={updateTbfInput}
+                onChange={(e) => setUpdateTbfInput(e.target.value)}
+                placeholder="Enter TBF Number"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-violet-500 focus:border-violet-500 font-mono"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setUpdateTbfTx(null)}
+                disabled={updatingTbf}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateTbf}
+                disabled={updatingTbf || !updateTbfInput.trim()}
+                className="px-4 py-2 text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                {updatingTbf ? 'Saving...' : 'Save TBF'}
               </button>
             </div>
           </div>

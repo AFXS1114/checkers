@@ -36,6 +36,18 @@ try {
         db.exec("ALTER TABLE transactions ADD COLUMN status TEXT DEFAULT 'UNPAID';");
         console.log("Added status column to transactions table.");
     }
+    const hasTbfNumber = txTableInfo.some(col => col.name === 'tbf_number');
+    if (!hasTbfNumber) {
+        db.exec("ALTER TABLE transactions ADD COLUMN tbf_number TEXT;");
+        console.log("Added tbf_number column to transactions table.");
+    }
+
+    const recTableInfo = db.prepare("PRAGMA table_info(transaction_records)").all() as any[];
+    const hasRecTbfNumber = recTableInfo.some(col => col.name === 'tbf_number');
+    if (!hasRecTbfNumber) {
+        db.exec("ALTER TABLE transaction_records ADD COLUMN tbf_number TEXT;");
+        console.log("Added tbf_number column to transaction_records table.");
+    }
 } catch (error) {
     console.error('Error initializing database schema:', error);
 }

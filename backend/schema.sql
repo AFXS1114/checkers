@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     total_vat REAL,
     grand_total REAL,
     status TEXT DEFAULT 'UNPAID',
+    tbf_number TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
@@ -32,6 +33,7 @@ CREATE TABLE IF NOT EXISTS transaction_records (
     tubs INTEGER,
     line_unloading_amount REAL,
     line_berthing_fee REAL,
+    tbf_number TEXT,
     FOREIGN KEY (transaction_id) REFERENCES transactions (id) ON DELETE CASCADE
 );
 

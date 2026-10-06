@@ -305,10 +305,14 @@ router.put('/:id', (req, res) => {
 
 router.patch('/:id/status', (req, res) => {
     const txId = req.params.id;
-    const { status } = req.body;
+    const { status, tbf_number } = req.body;
 
     if (!status || !['PAID', 'UNPAID'].includes(status)) {
         return res.status(400).json({ error: 'Invalid status. Must be PAID or UNPAID.' });
+    }
+
+    if (status === 'PAID' && (!tbf_number || !String(tbf_number).trim())) {
+        return res.status(400).json({ error: 'TBF Number is required to mark a transaction as PAID.' });
     }
 
     try {
@@ -317,11 +321,58 @@ router.patch('/:id/status', (req, res) => {
             return res.status(404).json({ error: 'Transaction not found' });
         }
 
-        db.prepare('UPDATE transactions SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(status, txId);
-        res.json({ success: true, status });
+        const markPaid = db.transaction(() => {
+            const tbf = status === 'PAID' ? String(tbf_number).trim().toUpperCase() : null;
+            db.prepare('UPDATE transactions SET status = ?, tbf_number = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+                .run(status, tbf, txId);
+
+            // Stamp tbf_number on all vessel records belonging to this transaction
+            if (status === 'PAID' && tbf) {
+                db.prepare('UPDATE transaction_records SET tbf_number = ? WHERE transaction_id = ?')
+                    .run(tbf, txId);
+            }
+        });
+
+        markPaid();
+        res.json({ success: true, status, tbf_number: status === 'PAID' ? String(tbf_number).trim().toUpperCase() : null });
     } catch (err) {
         console.error('Mark transaction status error:', err);
         res.status(500).json({ error: 'Failed to update transaction status' });
+    }
+});
+
+router.patch('/:id/tbf', (req, res) => {
+    const txId = req.params.id;
+    const { tbf_number } = req.body;
+
+    if (!tbf_number || !String(tbf_number).trim()) {
+        return res.status(400).json({ error: 'TBF Number is required.' });
+    }
+
+    try {
+        const existingTx: any = db.prepare('SELECT * FROM transactions WHERE id = ?').get(txId);
+        if (!existingTx) {
+            return res.status(404).json({ error: 'Transaction not found' });
+        }
+
+        if (existingTx.status !== 'PAID') {
+            return res.status(400).json({ error: 'TBF number can only be updated on PAID transactions.' });
+        }
+
+        const tbf = String(tbf_number).trim().toUpperCase();
+
+        const updateTbf = db.transaction(() => {
+            db.prepare('UPDATE transactions SET tbf_number = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+                .run(tbf, txId);
+            db.prepare('UPDATE transaction_records SET tbf_number = ? WHERE transaction_id = ?')
+                .run(tbf, txId);
+        });
+
+        updateTbf();
+        res.json({ success: true, tbf_number: tbf });
+    } catch (err) {
+        console.error('Update TBF number error:', err);
+        res.status(500).json({ error: 'Failed to update TBF number' });
     }
 });
 
