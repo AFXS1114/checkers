@@ -16,10 +16,12 @@ app.get('/api/health', (req, res) => {
 import transactionsRouter from './routes/transactions';
 import printRouter from './routes/print';
 import backupRouter from './routes/backup';
+import reportsRouter from './routes/reports';
 
 app.use('/api/transactions', transactionsRouter);
 app.use('/api/print', printRouter);
 app.use('/api/db', backupRouter);
+app.use('/api/reports', reportsRouter);
 
 
 app.get('/api/settings', (req, res) => {

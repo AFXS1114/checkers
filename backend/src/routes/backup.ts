@@ -5,10 +5,10 @@ import db from '../db';
 
 const router = express.Router();
 
-router.post('/backup', (req, res) => {
+router.get('/backup', (req, res) => {
     try {
         const dbPath = path.join(__dirname, '..', '..', 'data', 'fish_unloading.db');
-        const backupName = `backup_${Date.now()}.db`;
+        const backupName = `backup_${Date.now()}.sqlite3`;
         const backupPath = path.join(__dirname, '..', '..', 'data', backupName);
 
 
@@ -16,7 +16,11 @@ router.post('/backup', (req, res) => {
             .then(() => {
                 res.download(backupPath, backupName, (err) => {
                     if (err) console.error('Download error:', err);
-                    fs.unlinkSync(backupPath);
+                    try {
+                        fs.unlinkSync(backupPath);
+                    } catch (e) {
+                        console.error('Unlink error:', e);
+                    }
                 });
             })
             .catch((err: any) => {
